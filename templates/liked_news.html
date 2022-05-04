@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="/" class="btn btn-secondary">все новости</a>
+
+    {% for item in news %}
+       {% if item.id in liked_list %}
+            <div class="col-md6 border rounded">
+                <h2>{{ item.title }}</h2>
+                <div>
+                    {{ item.content }}
+                </div>
+                <div>
+                    Автор - {{ item.user.name }}
+                </div>
+
+
+                    {% if current_user.is_authenticated and current_user != item.user %}
+                        {% set a = item.id %}
+                        {% set b = a | string %}
+
+                        {% if b in current_user.know_num.split() %}
+
+                            <div>
+                                <a href="/dislike/{{ item.id }}/{{ current_user.id }}" class="btn btn-dark">&#10084;</a>
+                                <a href="/" class="btn btn-success">{{ item.user.number }}</a>
+                            </div>
+                        {% else %}
+                            <div>
+                                <a href="/dislike_from/{{ item.id }}/{{ current_user.id }}" class="btn btn-dark">&#10084;</a>
+                                <a href="/know_num/{{ item.id }}/{{ current_user.id }}" class="btn btn-success">узнать номер автора</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+
+
+
+            </div>
+       {% endif %}
+
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 align="center">объявления </h1>
+{% if current_user.is_authenticated %}
+    <a href="news" class="btn btn-secondary">Добавить объявление</a>
+    <a href="my_news1" class="btn btn-secondary">только мои</a>
+    <a href="news_liked_by/{{ current_user.id }}" class="btn btn-secondary">понравивишиеся мне</a>
+{% endif %}
+
+
+<br>
+
+<form method="post">
+    <input type="text" name="find1" autocomplete="off" placeholder="Поиск по объявлениям" required>
+    <input type="number" name="max" autocomplete="off" placeholder="максимум" required>
+    <input class="btn" type="submit" name="submit" value="искать">
+</form>
+
+{% for item in news %}
+    {% if item.id in news_need %}
+        <div class="col-md6 border rounded">
+            <h2>{{ item.title }}</h2>
+            <h4>{{ item.price }} руб</h4>
+            <div>
+                {{ item.content }}
+            </div>
+
+            <div>
+                автор - {{ item.user.name }}
+            </div>
+
+            {% if current_user.is_authenticated and current_user == item.user %}
+                <div>
+                    <a href="/news/{{ item.id }}" class="btn btn-secondary">Изменить</a>
+                    <a href="/news_delete/{{ item.id }}" class="btn btn-secondary">Удалить</a>
+                </div>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user != item.user %}
+                {% set a = item.id %}
+                {% set b = a | string %}
+
+                {% if b in current_user.liked_news.split() %}
+
+                    <div>
+                        <a href="/dislike/{{ item.id }}/{{ current_user.id }}" class="btn btn-dark">&#10084;</a>
+                    </div>
+                    {% else %}
+                    <div>
+                        <a href="/news_like/{{ item.id }}/{{ current_user.id }}" class="btn btn-dark">🤍</a>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endfor %}
+{% endblock %}
